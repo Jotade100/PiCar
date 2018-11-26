@@ -93,16 +93,18 @@ app.post("/sensores", function(req, res) {
 	var s3 = req.body.s3;
 	var s4 = req.body.s4;
 	var s5 = req.body.s5;
+	var sensores = req.body.status;
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
 		var dbo = db.db("piCar");
-		var myobj = { s1: s1, s1: s2, s1: s3, s1: s4, s1: s5 };
+		var myobj = { s1: s1, s1: s2, s1: s3, s1: s4, s1: s5, sensores: sensores };
 		dbo.collection("sensores").insertOne(myobj, function(err, res) {
 		  if (err) throw err;
 		  console.log("1 documento insertado");
-		  db.close();
+			db.close();
 		});
-	  });	
+		});
+		res.send('HOLA')	
 });
 
 // POST (para insertar movimientos)
@@ -160,6 +162,7 @@ if (module === require.main) {
   MongoClient.connect(url, function(err, db) {
 	if (err) throw err;
 	var dbo = db.db("piCar");
+	db.dropDatabase();
 	dbo.createCollection("sensors", function(err, res) {
 	  if (err) throw err;
 	  console.log("¡Collección sensores creada exitosamente!");
