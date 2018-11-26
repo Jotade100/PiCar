@@ -5,8 +5,9 @@
     <div class="container algin-center">
         <div class="row">
             <div class="col-sm">
+                <!-- Switch -->
                 <label class="switch">
-                    <input type="checkbox">
+                    <input type="checkbox" id="io" onchange="getVal(this)">
                     <span class="slider round"></span>
                 </label>
             </div>
@@ -60,3 +61,20 @@
         </div>
    </div>
 </div>
+
+<script>
+    function getVal(elem){
+        console.log(elem.checked);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'encendido', true);
+        if(elem.checked){
+            console.log("ON");
+            xhr.send(elem.checked);
+            
+        } else {
+            console.log("OFF");
+            xhr.send(elem.checked);
+        }
+    }
+
+</script>
