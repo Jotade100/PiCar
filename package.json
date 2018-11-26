@@ -15,6 +15,7 @@
   "author": "Iohannes Iacobus",
   "license": "ISC",
   "dependencies": {
+    "child_process": "^1.0.2",
     "express": "^4.16.3",
     "mongodb": "^3.1.10"
   }
