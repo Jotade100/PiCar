@@ -162,7 +162,7 @@ if (module === require.main) {
   MongoClient.connect(url, function(err, db) {
 	if (err) throw err;
 	var dbo = db.db("piCar");
-	db.dropDatabase();
+	dbo.dropDatabase();
 	dbo.createCollection("sensors", function(err, res) {
 	  if (err) throw err;
 	  console.log("¡Collección sensores creada exitosamente!");
