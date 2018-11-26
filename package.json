@@ -1,0 +1,21 @@
+{
+  "name": "piCar",
+  "version": "1.0.0",
+  "description": "Proyecto Programación 3",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "docker build -t ",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "piCar",
+    "Progra3"
+  ],
+  "author": "Iohannes Iacobus",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "mongodb": "^3.1.10"
+  }
+}
