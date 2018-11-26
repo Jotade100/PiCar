@@ -1,3 +1,8 @@
+<script>
+    function getState(){
+
+    }
+</script>
 <h1 class="display-2 text-center">PiCar Marro</h1>
 
 <div class="container">
@@ -69,11 +74,11 @@
         xhr.open('POST', 'encendido', true);
         if(elem.checked){
             console.log("ON");
-            xhr.send(elem.checked);
+            xhr.send(true);
             
         } else {
             console.log("OFF");
-            xhr.send(elem.checked);
+            xhr.send(false);
         }
     }
 
