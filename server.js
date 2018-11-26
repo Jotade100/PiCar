@@ -5,7 +5,8 @@ const bodyParser = require('body-parser');
 const querystring = require('querystring'); 
 var MongoClient = require('mongodb').MongoClient;
 var exec = require('child_process').exec;
-
+var path = require('path');
+var hbs = require('express-handlebars');
 //// ------------------------------------------------------------------------------------
 var url = "mongodb://localhost:27017/";
 
@@ -13,6 +14,18 @@ var url = "mongodb://localhost:27017/";
 var app = express()
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+/// ---------------------------------------------------------------------------------------
+// definiendo render engine. 
+app.engine('hbs', hbs({extname: 'hbs', defaultLayout: 'layout', layoutsDir: __dirname + '/views/layouts'}));
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'hbs');
+
+
+/// ---------------------------------------------------------------------------------------
+
+app.get("/start", function(req,res){
+	res.render('index');
+});
 
 // GET (página principal)
 app.get("/", function (req, res, error){
@@ -41,7 +54,6 @@ app.get("/", function (req, res, error){
 		  });
 		});
 	  });
-
 })
 
 // GET (métodos para el carro)
@@ -51,7 +63,7 @@ app.get("/estado", function (req, res, error){
 		var dbo = db.db("piCar");
 		dbo.collection("estado").find({}).toArray(function(err, result) {
 		  if (err) throw err;
-		  console.log(resultados)
+		  console.log(result)
 		  db.close();
 		});
 	  });
@@ -64,9 +76,9 @@ app.get("/encendido", function (req, res, error){
 		var dbo = db.db("piCar");
 		dbo.collection("encendido").find({}).toArray(function(err, result) {
 		  if (err) throw err;
-		  console.log(resultados)
-		  if(resultados[resultados.lenght()-1].boton) {
-			child = exec("python miprograma.py", function (error, stdout, stderr) {
+		  console.log(result)
+		  if(result[result.lenght()-1].boton) {
+			child = exec("python line_follower.py", function (error, stdout, stderr) {
 				if (error !== null) {
 					console.log('exec error: ' + error);
 				}
@@ -100,11 +112,11 @@ app.post("/sensores", function(req, res) {
 		var myobj = { s1: s1, s1: s2, s1: s3, s1: s4, s1: s5, sensores: sensores };
 		dbo.collection("sensores").insertOne(myobj, function(err, res) {
 		  if (err) throw err;
-		  console.log("1 documento insertado");
+			console.log("1 documento insertado");
 			db.close();
 		});
 		});
-		res.send('HOLA')	
+		res.send('HOLA');
 });
 
 // POST (para insertar movimientos)
@@ -162,7 +174,7 @@ if (module === require.main) {
   MongoClient.connect(url, function(err, db) {
 	if (err) throw err;
 	var dbo = db.db("piCar");
-	db.dropDatabase();
+	//dbo.dropDatabase();
 	dbo.createCollection("sensors", function(err, res) {
 	  if (err) throw err;
 	  console.log("¡Collección sensores creada exitosamente!");
