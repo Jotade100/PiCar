@@ -4,8 +4,6 @@ const express = require('express')
 const bodyParser = require('body-parser');
 var url = require('url');
 const querystring = require('querystring'); 
-var jade = require('jade');
-var ncp = require("copy-paste");
 var MongoClient = require('mongodb').MongoClient;
 
 //// ------------------------------------------------------------------------------------
@@ -69,11 +67,6 @@ app.post("/movimiento", function(req, res) {
 		});
 	  });	
 });
-
-
-//app.listen(8080, function (){
-//	console.log("¡HOLA! desde puerto: " + 8080);	
-//})
 
 if (module === require.main) {
   // [START server]
