@@ -7,7 +7,6 @@ var MongoClient = require('mongodb').MongoClient;
 var exec = require('child_process').exec;
 var path = require('path');
 var hbs = require('express-handlebars');
-const SSH = require('simple-ssh');
 //// ------------------------------------------------------------------------------------
 var url = "mongodb://localhost:27017/";
 
@@ -57,6 +56,18 @@ function convertiraEntero(elemento) {
 	}
 }
 
+function ultimos5(array) {
+	var resultado = []
+	for (i = 0; i < 5; i++) {
+		var espacio = []
+		array[i].sensores.array.forEach(element => {
+			espacio.push(definirEstado(JSON.stringify(element)))
+		});
+		resultado.push(espacio);
+	}
+	return resultado;
+}
+
 /// ---------------------------------------------------------------------------------------
 
 app.get("/start", function(req,res){
@@ -78,9 +89,6 @@ app.get("/", function (req, res, error){
 					// sensores
 					console.log("Result: " + JSON.stringify(result[result.length-1].sensores));
 					// movimientos
-					//console.log(typeof(result[result.length-1].sensores));
-					//console.log(typeof([1,2,3,4,5]));
-					//console.log(JSON.stringify(result[result.length-1].sensores) == JSON.stringify([1,2,3,4,5]));
 					var movimiento = "La Tierra no se mueve pero se mueve";
 					if(JSON.stringify(result[result.length-1].sensores) == JSON.stringify(["0","1","1","0","0"]) || JSON.stringify(result[result.length-1].sensores) == JSON.stringify(["0","1","0","0","0"]) || JSON.stringify(result[result.length-1].sensores) == JSON.stringify(["1","0","0","0","0"])) {
 						console.log("RIGHT");
@@ -101,7 +109,7 @@ app.get("/", function (req, res, error){
 						, r3: color(JSON.stringify(result[result.length-1].sensores[2]))
 						, r4: color(JSON.stringify(result[result.length-1].sensores[3]))
 						, r5: color(JSON.stringify(result[result.length-1].sensores[4]))
-						, trace: JSON.stringify(result.slice(result.length-5, result.length))
+						, trace: ultimos5(result.slice(result.length-5, result.length))
 						, encendido: stringABoolean(JSON.stringify(results[results.length-1].boton))
 						, estado: definirEstado(JSON.stringify(resultado[resultado.length-1].estado)),
 						movim: movimiento
