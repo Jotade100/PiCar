@@ -31,6 +31,10 @@
         background-color: #555;
         }
 
+        .container {
+            height: 100px;
+        }
+    
         .switch input { 
         opacity: 0;
         width: 0;
@@ -84,8 +88,15 @@
         border-radius: 50%;
         }
     </style>
+    <script>
+        var timer = null;
+        function auto_reload()
+        {
+            window.location = '/';
+        }
+    </script>
 </head>
-<body>
+<body onload="timer = setTimeout('auto_reload()',10);">
     {{{ body }}}
 </body>
 </html>

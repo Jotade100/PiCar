@@ -40,19 +40,30 @@ app.get("/", function (req, res, error){
 				dbo.collection("encendido").find({}).toArray(function(err, results) {
 					if (err) throw err;
 					// sensores
-					console.log(result)
+					console.log("Result: " + JSON.stringify(result[result.length-1].sensores));
 					// movimientos
-					console.log(resultados)
+					console.log("Resultados: " + JSON.stringify(resultados[resultados.length-1]))
 					// estado (corriendo o estacionado; velocidad)
-					console.log(resultado)
+					console.log("Resultado: " + JSON.stringify(resultado[resultado.length-1]))
 					// encendido (si el carro está encendido)
-					console.log(results)
+					console.log("Results: " + JSON.stringify(results[results.length-1]))
+					res.render('index',{r1:JSON.stringify(result[result.length-1].sensores[1]),
+						 r2:JSON.stringify(result[result.length-1].sensores[2])
+						, r3:JSON.stringify(result[result.length-1].sensores[3])
+						, r4:JSON.stringify(result[result.length-1].sensores[4])
+						, r5:JSON.stringify(result[result.length-1].sensores[5])
+						, results: JSON.stringify(results)
+						, estado: JSON.stringify(resultado[resultado.length-1].estado)
+						//mov: JSON.stringify(resultados[resultados.length-1])
+					});
+					//res.send(result);
 					db.close();
 				});
 			});
 		  });
 		});
-	  });
+		});
+		
 })
 
 // GET (métodos para el carro)
@@ -124,7 +135,7 @@ app.post("/movimiento", function(req, res) {
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
 		var dbo = db.db("piCar");
-		var myobj = { movimiento: mov };
+		var myobj = { movimiento: movimiento };
 		dbo.collection("movimientos").insertOne(myobj, function(err, res) {
 		  if (err) throw err;
 		  console.log("1 documento insertado");
@@ -146,21 +157,23 @@ app.post("/estado", function(req, res) {
 		  console.log("1 documento insertado");
 		  db.close();
 		});
-	  });	
+		});	
+		res.send("np");
 });
 
 app.post("/encendido", function(req, res) {
-	var boton = req.body.boton;
+	var variable = req.body.boton;
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
 		var dbo = db.db("piCar");
-		var myobj = { boton: boton };
+		var myobj = { boton: variable };
 		dbo.collection("encendido").insertOne(myobj, function(err, res) {
 		  if (err) throw err;
 		  console.log("1 documento insertado");
 		  db.close();
 		});
-	  });	
+		});
+		res.send('HOLA');	
 });
 
 if (module === require.main) {
@@ -173,7 +186,7 @@ if (module === require.main) {
   MongoClient.connect(url, function(err, db) {
 	if (err) throw err;
 	var dbo = db.db("piCar");
-	//dbo.dropDatabase();
+	dbo.dropDatabase();
 	dbo.createCollection("sensors", function(err, res) {
 	  if (err) throw err;
 	  console.log("¡Collección sensores creada exitosamente!");
