@@ -2,8 +2,8 @@
 <div>
     
 
-    Encendido: 
-    {{ results }}
+    <!--Encendido: 
+    {{ results }} -->
 
     
 
@@ -15,16 +15,24 @@
         <div class="row">
             <div class="col-sm">
                 <!-- Switch -->
-                <label class="switch">
-                    <input type="checkbox" id="io" onchange="getVal(this)">
+                {{#if encendido}}
+                    <label class="switch">
+                    <input type="checkbox" id="io" onchange="getVal({{encendido}})" checked={{encendido}}>
                     <span class="slider round"></span>
                 </label>
+                {{else}}
+                    <label class="switch">
+                    <input type="checkbox" id="io" onchange="getVal({{encendido}})">
+                    <span class="slider round"></span>
+                </label>
+                {{/if}}
+                
+
             </div>
             <div class="col-sm">
                 
                 <div class="d-flex flex-row-reverse">
-                     
-                    <span class="badge badge-pill badge-dark m-2">Estado:{{estado}}</span>
+                    <h3>{{{estado}}} </h3>
                     <!-- span class="badge badge-pill badge-danger m-2">Stopped</span> -->
                 </div>
             </div>
@@ -37,23 +45,23 @@
     <div class="jumbotron">
         <h1 class="h3">Current Sensor Array</h1>
         <div class="container algin-center">
-            <div class="row">
+            <center><div class="row">
                 <div class="col-sm">
-                    {{ r1 }}
+                    {{{ r1}}}
                 </div>
                 <div class="col-sm">
-                    {{ r2 }}
+                    {{{ r2 }}}
                 </div>
                 <div class="col-sm">
-                    {{ r3 }}
+                    {{{ r3 }}}
                 </div>
                 <div class="col-sm">
-                    {{ r4 }}
+                    {{{ r4 }}}
                 </div>
                 <div class="col-sm">
-                    {{ r5 }}
+                    {{{ r5 }}}
                 </div>
-            </div>
+            </div></center>
         </div>
     </div>
 </div>
@@ -62,35 +70,45 @@
     <div class="jumbotron">
         <h1 class="h3">Current Action</h1>
         <div>
-            <!--{{mov}}-->
+           <center><h4>{{{movim}}} </h4></center>
         </div>
    </div>
 </div>
 
 <div class="container">
     <div class="jumbotron">
-        <h1 class="h3">Extras</h1>
+        <h1 class="h3">Velocímetro</h1>
         <div>
-
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"  style="width: {{velocidadImagen}}%" aria-valuenow="{{velocidad}}" aria-valuemin="0" aria-valuemax="100">{{velocidad}} RPM</div>
+            </div>
         </div>
+   </div>
+</div>
+
+<div class="container">
+    <div class="jumbotron">
+        <h1 class="h3">Track Trace</h1>
+        {{trace}}
    </div>
 </div>
 
 
 <script>
     function getVal(elem){
-        console.log(elem.checked);
+        //console.log(elem.checked);
+        console.log(elem);
         var xhr = new XMLHttpRequest();
         
         xhr.open('POST', '/encendido', true);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        if(elem.checked){
+        if(elem){
             console.log("ON");
-            xhr.send("boton=true");
+            xhr.send("boton=false");
             
         } else {
             console.log("OFF");
-            xhr.send("boton=false");
+            xhr.send("boton=true");
         }
     }
 

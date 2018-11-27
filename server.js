@@ -7,6 +7,7 @@ var MongoClient = require('mongodb').MongoClient;
 var exec = require('child_process').exec;
 var path = require('path');
 var hbs = require('express-handlebars');
+const SSH = require('simple-ssh');
 //// ------------------------------------------------------------------------------------
 var url = "mongodb://localhost:27017/";
 
@@ -21,10 +22,47 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
 /// ---------------------------------------------------------------------------------------
+function color(elemento) {
+	if (elemento == JSON.stringify("0")){
+		return '<span class="badge badge-danger">&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <p> &nbsp </span>';
+	} else {
+		return '<span class="badge badge-dark">&nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp<p> &nbsp</span>';
+	}
+}
+
+function definirEstado(elemento) {
+	if (elemento == JSON.stringify("running")){
+		return '<span class="badge badge-pill badge-success m-2"> Running </span>';
+	} else if (elemento == JSON.stringify("stop"))  {
+		return '<span class="badge badge-pill badge-danger m-2"> Stop </span>';
+	} else {
+		return '<span class="badge badge-pill badge-warning m-2"> ' + elemento + ' </span>';
+	}
+}
+
+function stringABoolean(elemento) {
+	if (elemento == JSON.stringify("true")){
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function convertiraEntero(elemento) {
+	//console.log(elemento);
+	if(!isNaN(parseInt(elemento))) {
+		return parseInt(elemento);
+	} else {
+		return 0;
+	}
+}
+
+/// ---------------------------------------------------------------------------------------
 
 app.get("/start", function(req,res){
 	res.render('index');
 });
+
 
 // GET (página principal)
 app.get("/", function (req, res, error){
@@ -33,8 +71,6 @@ app.get("/", function (req, res, error){
 		var dbo = db.db("piCar");
 		dbo.collection("sensores").find({}).toArray(function(err, result) {
 		  if (err) throw err;
-		  dbo.collection("movimientos").find({}).toArray(function(err, resultados) {
-			if (err) throw err;
 			dbo.collection("estado").find({}).toArray(function(err, resultado) {
 				if (err) throw err;
 				dbo.collection("encendido").find({}).toArray(function(err, results) {
@@ -42,26 +78,45 @@ app.get("/", function (req, res, error){
 					// sensores
 					console.log("Result: " + JSON.stringify(result[result.length-1].sensores));
 					// movimientos
-					console.log("Resultados: " + JSON.stringify(resultados[resultados.length-1]))
+					//console.log(typeof(result[result.length-1].sensores));
+					//console.log(typeof([1,2,3,4,5]));
+					//console.log(JSON.stringify(result[result.length-1].sensores) == JSON.stringify([1,2,3,4,5]));
+					var movimiento = "La Tierra no se mueve pero se mueve";
+					if(JSON.stringify(result[result.length-1].sensores) == JSON.stringify(["0","1","1","0","0"]) || JSON.stringify(result[result.length-1].sensores) == JSON.stringify(["0","1","0","0","0"]) || JSON.stringify(result[result.length-1].sensores) == JSON.stringify(["1","0","0","0","0"])) {
+						console.log("RIGHT");
+						movimiento = '<div class="alert alert-primary" role="alert"> Derecha </div>';
+					} else if(JSON.stringify(result[result.length-1].sensores) == JSON.stringify(["0","0","1","1","0"]) || JSON.stringify(result[result.length-1].sensores) == JSON.stringify(["0","0","0","1","0"]) || JSON.stringify(result[result.length-1].sensores) == JSON.stringify(["0","0","0","0","1"])  || JSON.stringify(result[result.length-1].sensores) == JSON.stringify(["0","0","0","1","1"])) {
+						console.log("LEFT");
+						movimiento = '<div class="alert alert-success" role="alert"> Izquierda </div>';
+					} else {
+						console.log("CAMINANDO");
+						movimiento = '<div class="alert alert-dark" role="alert"> Andando </div>';
+					}
 					// estado (corriendo o estacionado; velocidad)
 					console.log("Resultado: " + JSON.stringify(resultado[resultado.length-1]))
 					// encendido (si el carro está encendido)
 					console.log("Results: " + JSON.stringify(results[results.length-1]))
-					res.render('index',{r1:JSON.stringify(result[result.length-1].sensores[1]),
-						 r2:JSON.stringify(result[result.length-1].sensores[2])
-						, r3:JSON.stringify(result[result.length-1].sensores[3])
-						, r4:JSON.stringify(result[result.length-1].sensores[4])
-						, r5:JSON.stringify(result[result.length-1].sensores[5])
-						, results: JSON.stringify(results)
-						, estado: JSON.stringify(resultado[resultado.length-1].estado)
+					res.render('index',{r1: color(JSON.stringify(result[result.length-1].sensores[0])),
+						 r2: color(JSON.stringify(result[result.length-1].sensores[1]))
+						, r3: color(JSON.stringify(result[result.length-1].sensores[2]))
+						, r4: color(JSON.stringify(result[result.length-1].sensores[3]))
+						, r5: color(JSON.stringify(result[result.length-1].sensores[4]))
+						, trace: JSON.stringify(result.slice(result.length-5, result.length))
+						, encendido: stringABoolean(JSON.stringify(results[results.length-1].boton))
+						, estado: definirEstado(JSON.stringify(resultado[resultado.length-1].estado)),
+						movim: movimiento
+						, velocidad: convertiraEntero(JSON.stringify(resultado[resultado.length-1].velocidad))
+						, velocidadImagen: convertiraEntero(JSON.stringify(resultado[resultado.length-1].velocidad)) +10	
+
 						//mov: JSON.stringify(resultados[resultados.length-1])
 					});
+					console.log(stringABoolean(JSON.stringify(results[results.length-1].boton)));
+					console.log(convertiraEntero(JSON.stringify(resultado[resultado.length-1].velocidad)))
 					//res.send(result);
 					db.close();
 				});
 			});
 		  });
-		});
 		});
 		
 })
@@ -80,25 +135,39 @@ app.get("/estado", function (req, res, error){
 
 })
 
+// GET Y ENCENDIDO
+// var ssh = new SSH({
+//     host: '192.168.43.59',
+//     user: 'pi',
+//     pass: 'raspberry'
+// });
+
+
+
 app.get("/encendido", function (req, res, error){
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
 		var dbo = db.db("piCar");
 		dbo.collection("encendido").find({}).toArray(function(err, result) {
 		  if (err) throw err;
-		  console.log(result)
-		  if(result[result.lenght()-1].boton) {
-			child = exec("python line_follower.py", function (error, stdout, stderr) {
-				if (error !== null) {
-					console.log('exec error: ' + error);
-				}
-			});
+		  console.log(result);
+		  //res.send(result[result.length-1]);
+		  if(result[result.length-1].boton == "true") {
+			// ssh.exec('', {
+			// 	out: function(stdout) {
+			// 		console.log(stdout);
+			// 	}
+			// }).start();
+			res.send(true);
+		   //process.exit();
 		  } else {
-			child = exec("^C", function (error, stdout, stderr) {
-				if (error !== null) {
-					console.log('exec error: ' + error);
-				}
-			});
+			// ssh.exec('', {
+			// 	out: function(stdout) {
+			// 		console.log(stdout);
+			// 	}
+			// }).start();
+			console.log("ME LLEVA LA GRAN %&$@")
+			res.send(false);
 
 		  }
 		  db.close();
@@ -110,16 +179,11 @@ app.get("/encendido", function (req, res, error){
 
 // POST (para insertar sensores)
 app.post("/sensores", function(req, res) {
-	var s1 = req.body.s1;
-	var s2 = req.body.s2;
-	var s3 = req.body.s3;
-	var s4 = req.body.s4;
-	var s5 = req.body.s5;
 	var sensores = req.body.status;
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
 		var dbo = db.db("piCar");
-		var myobj = { s1: s1, s1: s2, s1: s3, s1: s4, s1: s5, sensores: sensores };
+		var myobj = {sensores: sensores };
 		dbo.collection("sensores").insertOne(myobj, function(err, res) {
 		  if (err) throw err;
 			console.log("1 documento insertado");
@@ -187,39 +251,71 @@ if (module === require.main) {
 	if (err) throw err;
 	var dbo = db.db("piCar");
 	dbo.dropDatabase();
-	dbo.createCollection("sensors", function(err, res) {
-	  if (err) throw err;
-	  console.log("¡Collección sensores creada exitosamente!");
-	  db.close();
-	});
-  });
+	console.log("Base de datos reiniciada")
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
 		var dbo = db.db("piCar");
-		dbo.createCollection("movimientos", function(err, res) {
-		if (err) throw err;
-		console.log("¡Collección movimientos creada exitosamente!");
-		db.close();
+		dbo.createCollection("sensores", function(err, res) {
+		  if (err) throw err;
+		  console.log("¡Collección sensores creada exitosamente!");
+		  db.close();
+		  MongoClient.connect(url, function(err, db) {
+			if (err) throw err;
+			var dbo = db.db("piCar");
+			var myobj = [{ sensores: [1,2,3,4,5]}, { sensores: [1,2,3,4,5]}, { sensores: [1,2,3,4,5]}, { sensores: [1,2,3,4,5]}, { sensores: [1,2,3,4,5]}];
+			dbo.collection("sensores").insertMany(myobj, function(err, res) {
+			  if (err) throw err;
+			  console.log("1 documento insertado");
+			  db.close();
+			});
+		  });
 		});
+	  });
+	  
+		
+	  
+		MongoClient.connect(url, function(err, db) {
+			if (err) throw err;
+			var dbo = db.db("piCar");
+			dbo.createCollection("estado", function(err, res) {
+			  if (err) throw err;
+			  console.log("¡Collección estado creada exitosamente!");
+			  db.close();
+			  MongoClient.connect(url, function(err, db) {
+				if (err) throw err;
+				var dbo = db.db("piCar");
+				var myobj = { estado: "Como la democracia", velocidad: 0};
+				dbo.collection("estado").insertOne(myobj, function(err, res) {
+				  if (err) throw err;
+				  console.log("1 documento insertado");
+				  db.close();
+				});
+			  });
+		});
+	  });
+	  
+		MongoClient.connect(url, function(err, db) {
+			if (err) throw err;
+			var dbo = db.db("piCar");
+			dbo.createCollection("encendido", function(err, res) {
+			  if (err) throw err;
+			  console.log("¡Collección encendido creada exitosamente!");
+			  db.close();
+			  MongoClient.connect(url, function(err, db) {
+				if (err) throw err;
+				var dbo = db.db("piCar");
+				var myobj = { boton: true};
+				dbo.collection("encendido").insertOne(myobj, function(err, res) {
+				  if (err) throw err;
+				  console.log("1 documento insertado");
+				  db.close();
+				});
+			  });
+		});
+	  });
+	  
   });
-	MongoClient.connect(url, function(err, db) {
-		if (err) throw err;
-		var dbo = db.db("piCar");
-		dbo.createCollection("estado", function(err, res) {
-		  if (err) throw err;
-		  console.log("¡Collección estado creada exitosamente!");
-		  db.close();
-	});
-  });
-	MongoClient.connect(url, function(err, db) {
-		if (err) throw err;
-		var dbo = db.db("piCar");
-		dbo.createCollection("encendido", function(err, res) {
-		  if (err) throw err;
-		  console.log("¡Collección encendido creada exitosamente!");
-		  db.close();
-	});
-  });
+  
   // [END server]
 }
 
