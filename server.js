@@ -56,17 +56,17 @@ function convertiraEntero(elemento) {
 	}
 }
 
-function ultimos5(array) {
-	var resultado = []
-	for (i = 0; i < 5; i++) {
-		var espacio = []
-		array[i].sensores.array.forEach(element => {
-			espacio.push(definirEstado(JSON.stringify(element)))
-		});
-		resultado.push(espacio);
-	}
-	return resultado;
-}
+// function ultimos5(array) {
+// 	var resultado = []
+// 	for (i = 0; i < 5; i++) {
+// 		var espacio = []
+// 		array[i].sensores.array.forEach(element => {
+// 			espacio.push(definirEstado(JSON.stringify(element)))
+// 		});
+// 		resultado.push(espacio);
+// 	}
+// 	return resultado;
+// }
 
 /// ---------------------------------------------------------------------------------------
 
@@ -109,7 +109,7 @@ app.get("/", function (req, res, error){
 						, r3: color(JSON.stringify(result[result.length-1].sensores[2]))
 						, r4: color(JSON.stringify(result[result.length-1].sensores[3]))
 						, r5: color(JSON.stringify(result[result.length-1].sensores[4]))
-						, trace: ultimos5(result.slice(result.length-5, result.length))
+						// , trace: ultimos5(result.slice(result.length-5, result.length))
 						, encendido: stringABoolean(JSON.stringify(results[results.length-1].boton))
 						, estado: definirEstado(JSON.stringify(resultado[resultado.length-1].estado)),
 						movim: movimiento
