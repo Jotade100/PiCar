@@ -1,14 +1,5 @@
 <h1 class="display-2 text-center">PiCar Marro</h1>
-<div>
-    
 
-    <!--Encendido: 
-    {{ results }} -->
-
-    
-
-    
-</div>
 <div class="container">
   <div class="jumbotron">
     <div class="container algin-center">
@@ -43,7 +34,7 @@
 
 <div class="container">
     <div class="jumbotron">
-        <h1 class="h3">Current Sensor Array</h1>
+        <h1 class="h3">Estado actual de sensores</h1>
         <div class="container algin-center">
             <center><div class="row">
                 <div class="col-sm">
@@ -68,7 +59,7 @@
 
 <div class="container">
     <div class="jumbotron">
-        <h1 class="h3">Current Action</h1>
+        <h1 class="h3">Acción actual</h1>
         <div>
            <center><h4>{{{movim}}} </h4></center>
         </div>
@@ -77,21 +68,31 @@
 
 <div class="container">
     <div class="jumbotron">
-        <h1 class="h3">Velocímetro</h1>
-        <div>
-            <div class="progress">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"  style="width: {{velocidadImagen}}%" aria-valuenow="{{velocidad}}" aria-valuemin="0" aria-valuemax="100">{{velocidad}} RPM</div>
-            </div>
+        <div class="container algin-center">
+            <center><div class="row">
+                <div class="col-sm">
+                    <h1 class="h3">Velocímetro</h1>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"  style="width: {{velocidadImagen}}%" aria-valuenow="{{velocidad}}" aria-valuemin="0" aria-valuemax="100">{{velocidad}} RPM</div>
+                        </div>
+                </div>
+                <div class="col-sm">
+                    <h1 class="h3">Last movements</h1>
+                        {{#each trace}}
+                            <p>{{#each this}}
+                                {{{this}}} 
+                            {{/each}}   </p>  
+                        {{/each}}
+                </div>
+            </div></center>
         </div>
+        <br></br>
+        <br></br>
+        <br></br>        
    </div>
 </div>
 
-<div class="container">
-    <div class="jumbotron">
-        <h1 class="h3">Track Trace</h1>
-        {{trace}}
-   </div>
-</div>
+
 
 
 <script>

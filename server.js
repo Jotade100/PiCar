@@ -29,6 +29,14 @@ function color(elemento) {
 	}
 }
 
+function colorTrace(elemento) {
+	if (elemento == JSON.stringify("0")){
+		return '<span class="badge badge-pill badge-danger m-2">&nbsp</span>';
+	} else {
+		return '<span class="badge badge-pill badge-dark m-2">&nbsp</span>';
+	}
+}
+
 function definirEstado(elemento) {
 	if (elemento == JSON.stringify("running")){
 		return '<span class="badge badge-pill badge-success m-2"> Running </span>';
@@ -58,10 +66,10 @@ function convertiraEntero(elemento) {
 
 function ultimos5(array) {
 	var resultado = []
-	for (i = 0; i < 5; i++) {
+	for (var i = 0; i < 5; i++) {
 		var espacio = []
-		array[i].sensores.array.forEach(element => {
-			espacio.push(definirEstado(JSON.stringify(element)))
+		array[i].sensores.forEach(element => {
+			espacio.push(colorTrace(JSON.stringify(element)))
 		});
 		resultado.push(espacio);
 	}
