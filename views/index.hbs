@@ -19,14 +19,14 @@
                 {{/if}}
             </div>
             <div class="col-sm">
-                <a href="#" class="arrow round centro">⭕</a>
-                <a href="#" class="arrow round up">🖕</a>
-                <a href="#" class="arrow round down">👇</a>
+                <a onclick="inDir(5);" class="arrow round center">⭕</a>
+                <a onclick="inDir(1);" class="arrow round up">🖕</a>
+                <a onclick="inDir(2);" class="arrow round down">👇</a>
 
                 
 
-                <a href="#" class="arrow round left">👈</a>
-                <a href="#" class="arrow round right">👉</a>
+                <a onclick="inDir(3);" class="arrow round left">👈</a>
+                <a onclick="inDir(4);" class="arrow round right">👉</a>
             </div>
             <div class="col-sm">
                 
@@ -117,6 +117,30 @@
         } else {
             console.log("OFF");
             xhr.send("boton=true");
+        }
+    }
+    function inDir(elem){
+         console.log(elem);
+        var xhr = new XMLHttpRequest();
+        
+        xhr.open('POST', '/move', true);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        if(elem==1){
+            console.log("1");
+            xhr.send("dir=1");
+            
+        } else if (elem==2){
+            console.log("2");
+            xhr.send("dir=2");
+        } else if (elem==3){
+            console.log("3");
+            xhr.send("dir=3");
+        } else if (elem == 4){
+            console.log("4");
+            xhr.send("dir=4");
+        } else {
+            console.log("0");
+            xhr.send("dir=0");
         }
     }
 

@@ -1,5 +1,5 @@
 # PiCar :car:
-Contiene el código utilizado para el tercer proyecto de la asignatura de Porgramación III. piCar + Raspberry
+Contiene el código utilizado para el tercer proyecto de la asignatura de Programación III. piCar + Raspberry
 
 ## Autores
 
