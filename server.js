@@ -248,6 +248,22 @@ app.post("/encendido", function(req, res) {
 		res.send('HOLA');	
 });
 
+app.post("/move", function(req, res) {
+	var dirin = req.body.dir;
+	
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		var dbo = db.db("piCar");
+		var myobj = { dir: dirin };
+		dbo.collection("direccion").insertOne(myobj, function(err, res) {
+		  if (err) throw err;
+		  console.log("1 direccion insertada"+dirar);
+		  db.close();
+		});
+		});
+		res.send('HOLA');	
+});
+
 if (module === require.main) {
   // [START server]
   // Start the server
