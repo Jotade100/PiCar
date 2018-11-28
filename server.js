@@ -119,7 +119,7 @@ app.get("/", function (req, res, error){
 						, r3: color(JSON.stringify(result[result.length-1].sensores[2]))
 						, r4: color(JSON.stringify(result[result.length-1].sensores[3]))
 						, r5: color(JSON.stringify(result[result.length-1].sensores[4]))
-						// , trace: ultimos5(result.slice(result.length-5, result.length))
+						, trace: ultimos5(result.slice(result.length-5, result.length))
 						, encendido: stringABoolean(JSON.stringify(results[results.length-1].boton))
 						, estado: definirEstado(JSON.stringify(resultado[resultado.length-1].estado)),
 						movim: movimiento
