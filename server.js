@@ -153,6 +153,20 @@ app.get("/estado", function (req, res, error){
 
 })
 
+app.get("/move", function (req, res, error){
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		var dbo = db.db("piCar");
+		dbo.collection("direccion").find({}).toArray(function(err, result) {
+		  if (err) throw err;
+			console.log(result[result.length-1])
+			res.send(result[result.length-1].dir)
+		  db.close();
+		});
+	  });
+
+})
+
 // GET Y ENCENDIDO
 // var ssh = new SSH({
 //     host: '192.168.43.59',
@@ -224,6 +238,22 @@ app.post("/movimiento", function(req, res) {
 		  db.close();
 		});
 	  });	
+});
+
+app.post("/move", function(req, res) {
+	var dirin = req.body.dir;
+	
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		var dbo = db.db("piCar");
+		var myobj = { dir: dirin };
+		dbo.collection("direccion").insertOne(myobj, function(err, res) {
+		  if (err) throw err;
+		  console.log("1 direccion insertada "+dirin);
+		  db.close();
+		});
+		});
+		res.send('HOLA');	
 });
 
 // POST (para comunicar el estado del carro desde la página)
@@ -324,6 +354,25 @@ if (module === require.main) {
 				var dbo = db.db("piCar");
 				var myobj = { boton: true};
 				dbo.collection("encendido").insertOne(myobj, function(err, res) {
+				  if (err) throw err;
+				  console.log("1 documento insertado");
+				  db.close();
+				});
+			  });
+		});
+		});
+		MongoClient.connect(url, function(err, db) {
+			if (err) throw err;
+			var dbo = db.db("piCar");
+			dbo.createCollection("direccion", function(err, res) {
+			  if (err) throw err;
+			  console.log("¡Collección direccion creada exitosamente!");
+			  db.close();
+			  MongoClient.connect(url, function(err, db) {
+				if (err) throw err;
+				var dbo = db.db("piCar");
+				var myobj = { mov: 0};
+				dbo.collection("direccion").insertOne(myobj, function(err, res) {
 				  if (err) throw err;
 				  console.log("1 documento insertado");
 				  db.close();
